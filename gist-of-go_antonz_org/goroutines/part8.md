@@ -1,6 +1,6 @@
 # Channel Signal
 
-Nesta etapa usamos uma goroutine para producer e outra para consumer. No entanto, no escopo externo não ficou nenhum sinalizador do canal para dizer para nossa main thread esperar para receber dados do canal, então nosso código finalizaria antes de o producer terminal.
+Nesta etapa usamos uma goroutine para producer e outra para consumer. No entanto, no escopo externo não ficou nenhum sinalizador do canal para dizer para nossa main thread esperar para receber dados do canal, então nosso código finalizaria antes de o producer terminar.
 
 Assim sendo, podemos usar `sync.WaitGroup` para aguardar a goroutine finalizar, mas podemos usar um channel `done` quando temos apenas uma goroutine producer. Isso funciona, a main thread fica travada até que o producer termine.
 
