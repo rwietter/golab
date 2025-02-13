@@ -1,11 +1,11 @@
-package main
+package channels
 
 import (
 	"fmt"
 	"time"
 )
 
-func main() {
+func Chan() {
 	channel := make(chan string)
 	go fanIn("1111111", channel)
 	go fanIn("2222222", channel)
