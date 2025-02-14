@@ -2,6 +2,7 @@ package channels
 
 import (
 	"fmt"
+	"runtime"
 	"sync"
 	"time"
 )
@@ -13,16 +14,26 @@ func ChannelSnippet() {
 	par := make(chan int)
 	impar := make(chan int)
 
-	wg.Add(1)
-	go calculate(par, impar, &wg)
-	go print(par, impar)
+	fmt.Println("SO Threads:", runtime.NumCPU())
+	fmt.Println("Goroutines:", runtime.NumGoroutine())
 
+	wg.Add(2)
+	go calculate(par, impar, &wg)
+	go print(par, impar, &wg)
+
+	fmt.Println("Goroutines:", runtime.NumGoroutine())
+
+	fmt.Println("Waiting...")
 	wg.Wait()
+
+	fmt.Println("After wg.Wait - Goroutines:", runtime.NumGoroutine())
 
 	fmt.Println("Tempo de execução:", time.Since(startTime).Seconds())
 }
 
 func calculate(par, impar chan int, wg *sync.WaitGroup) {
+	defer close(par)
+	defer close(impar)
 	defer wg.Done() // Sinaliza que a goroutine terminou
 
 	for i := 1; i <= 10; i++ {
@@ -32,23 +43,22 @@ func calculate(par, impar chan int, wg *sync.WaitGroup) {
 			impar <- i
 		}
 	}
-	close(par)
-	close(impar)
 }
 
-func print(par, impar chan int) {
-	for {
+func print(par, impar chan int, wg *sync.WaitGroup) {
+	defer wg.Done() // Sinaliza que a goroutine terminou
+	for par != nil || impar != nil {
 		select {
 		case v, ok := <-par:
 			if !ok {
 				par = nil // evitar que o case seja selecionado novamente
-				return
+				continue
 			}
 			fmt.Println("Par:", v)
 		case v, ok := <-impar:
 			if !ok {
 				impar = nil // evitar que o case seja selecionado novamente
-				return
+				continue
 			}
 			fmt.Println("Impar:", v)
 		}
