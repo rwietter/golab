@@ -22,7 +22,7 @@ func worker(id int, tasks <-chan int, done <-chan struct{}, wg *sync.WaitGroup) 
 	}
 }
 
-func WorkerPool() {
+func SimpleWorker() {
 	wg := sync.WaitGroup{}
 	tasks := make(chan int, 10)
 	done := make(chan struct{})
