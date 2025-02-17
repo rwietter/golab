@@ -7,8 +7,8 @@ import (
 
 func Chan() {
 	channel := make(chan string)
-	go fanIn("1111111", channel)
-	go fanIn("2222222", channel)
+	go routine("1111111", channel)
+	go routine("2222222", channel)
 
 	for {
 		message, open := <-channel // receive value from channel
@@ -27,7 +27,7 @@ func Chan() {
 	}
 }
 
-func fanIn(str string, channel chan string) {
+func routine(str string, channel chan string) {
 	for i := 0; i < 2; i++ {
 		channel <- str // send value to channel
 		time.Sleep(time.Second)
